@@ -1,0 +1,12 @@
+<p>app1 works!</p>
+<form [formGroup]="form" style="background-color: darkgray; padding: 10px">
+    <ng-container #container></ng-container>
+    <div #feature name="app-feature2"></div>
+    <!--<div #feature name="app-feature1"></div>-->
+    <div #feature name="app-feature1"></div>
+    <div #feature name="app-feature3"></div>
+    <button type="submit" [disabled]="bus.get('submitDisabled')?.value" (click)='submit()'>apply</button>
+    <div>
+        {{form.value | json}}/{{bus.get('submitDisabled')?.value | json}}
+    </div>
+</form>

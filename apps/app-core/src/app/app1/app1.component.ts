@@ -1,17 +1,10 @@
 import {
   Component,
-  ElementRef,
-  QueryList,
-  ViewChildren,
-  AfterViewInit,
   ViewContainerRef,
   Injector,
   ViewChild,
   Optional,
-  ComponentFactory,
-  ComponentFactoryResolver,
   ChangeDetectorRef,
-  AfterContentInit,
   Inject,
   ComponentRef
 } from '@angular/core';
@@ -19,9 +12,12 @@ import { Feature2Component } from "./feature2/feature2.component";
 import { Feature1Component } from "./feature1/feature1.component";
 import {Feature3Component} from "./feature3/feature3.component";
 import {DynamicComponentsResolver} from "../dynamic-component-resolver.service";
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import {IFeature} from "../IFeature";
 import { EmployeeService } from './services/employee.service';
+import { Store } from '@ngrx/store';
+import { LoadEmployeeAction, SaveEmployeeAction } from './store/employee.action';
+import { selectEmployee } from './store/employee.selector';
 
 @Component({
   selector: 'app-app1',
@@ -35,11 +31,11 @@ export class App1Component {
 
   constructor(
       private injector: Injector,
-      private componentFactoryResolver: ComponentFactoryResolver,
       private fb: FormBuilder,
       private changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject('DEPENDENCY_RESOLVER') private dynamicResolver: DynamicComponentsResolver,
-      private employee: EmployeeService
+      private employee: EmployeeService,
+      private store: Store,
   ) {
   }
 
@@ -56,13 +52,19 @@ export class App1Component {
   @ViewChild('container', {read: ViewContainerRef} ) container: ViewContainerRef | undefined;
 
   public async ngOnInit() {
+    this.store.dispatch(new LoadEmployeeAction);
+
     this.dynamicComponents =
       await this.dynamicResolver.getDynamicComponents(this.dynamicComponents);
     this.initFeatures();
     this.changeDetectorRef.detectChanges();
 
-    this.model = await this.employee.getEmployee();
-    this.refreshModel(this.model);
+/*    this.model = await this.employee.getEmployee();*/
+    this.store.select(selectEmployee).subscribe((data) => {
+      if(data) {
+        this.refreshModel(data);
+      }
+    });
   }
 
   private refreshModel(model: any){
@@ -109,12 +111,11 @@ export class App1Component {
     this.refreshModel(value);
   }
 
-  public async submit() {
+  public submit() {
     if(this.form.invalid) {
       console.log('FORM IS INVALID');
       return;
     }
-    let model = await this.employee.saveEmployee(this.form.value);
-    this.refreshModel(model);
+    this.store.dispatch(new SaveEmployeeAction(this.form.value));
   }
 }

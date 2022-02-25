@@ -6,11 +6,20 @@ import { lastValueFrom } from 'rxjs';
 export class EmployeeService {
 
   constructor(private http: HttpClient, @Inject('HOST_NAME') private host: string) { }
-  async getEmployee () {
+/*  async getEmployee () {
     return await lastValueFrom(this.http.get(`${this.host}/employees`));
+  }*/
+
+  getEmployeeEx () {
+    debugger
+    return this.http.get(`${this.host}/employees`);
   }
 
   async saveEmployee(model: any) {
     return await lastValueFrom(this.http.put(`${this.host}/employees`, model));
+  }
+
+  saveEmployeeEx(model: any) {
+    return this.http.put(`${this.host}/employees`, model);
   }
 }

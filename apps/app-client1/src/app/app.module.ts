@@ -6,15 +6,19 @@ import { NxWelcomeComponent } from './nx-welcome.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app.routing.module';
 import { DynamicComponentsResolver } from './dynamic-component-resolver.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Feature2Module } from './app1/feature2/feature2.module';
+import { ReactiveFormsModule } from '@angular/forms';
 import { App1Module } from './app1/app1.module';
+import { Store, StoreModule } from '@ngrx/store';
+import { appReducer } from './store/app-reducer';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent, NxWelcomeComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    StoreModule.forRoot(appReducer),
+    EffectsModule.forRoot([]),
     ReactiveFormsModule,
     App1Module
   ],
